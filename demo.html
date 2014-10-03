@@ -1,0 +1,163 @@
+<!--
+    @license
+    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>azure-mobile-services-bridge Demo</title>
+
+  <script src="../platform/platform.js"></script>
+  <link rel="import" href="azure-mobile-services-bridge.html">
+
+</head>
+<body unresolved>
+
+  <p>An example of using <code>&lt;azure-mobile-services-bridge></code>:</p>
+
+    <azure-mobile-services-bridge appurl="https://azuremobileservicesbridge.azure-mobile.net/"
+                                  appkey="KTUPefESOYljUujPZBLWipxFEFpEya62"
+                                  table="DemoTable"
+                                  auto>
+
+    </azure-mobile-services-bridge>
+
+    <h1>Demo Table</h1>
+
+    <p id="info">
+
+    </p>
+
+    <table cellpadding="5">
+        <thead>
+            <tr>
+                <td>
+                    ID
+                </td>
+                <td>
+                    Col 1
+                </td>
+                <td>
+                    Col 2
+                </td>
+                <td>
+                    <button onclick="refresh();">Refresh</button>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <template repeat="{{response}}">
+                <tr>
+                    <td>
+                        {{id}}
+                    </td>
+                    <td>
+                        {{col1}}
+                    </td>
+                    <td>
+                        {{col2}}
+                    </td>
+                    <td>
+                        <button onclick="del('{{id}}');">Delete</button>
+                    </td>
+                </tr>
+            </template>
+            <tr>
+                <td></td>
+                <td>
+                    <input id="col1" />
+                </td>
+                <td>
+                    <input id="col2" />
+                </td>
+                <td>
+                    <button onclick="insert();">Insert</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+    document.addEventListener('polymer-ready', function () {
+        var ams = document.querySelector("azure-mobile-services-bridge");
+        ams.addEventListener("core-response",
+          function (e) {
+              var ams = document.querySelector("azure-mobile-services-bridge");
+
+              switch (ams.method) {
+                  case 'INSERT':
+                      infoInsert(e.detail.response.id);
+                      refresh();
+                      break;
+                  case 'DELETE':
+                      infoDelete();
+                      refresh();
+                      break;
+                  case 'READ':
+                  default:
+                      populateTabe(e.detail.response);
+              }
+          }
+        );
+        ams.addEventListener("core-error",
+            function (e) {
+                var info = document.getElementById('info');
+                info.innerHTML = e.detail.error;
+            }
+        );
+    });
+
+    function populateTabe(items) {
+        document.querySelector('template').model = {
+            response: items
+        };
+    }
+
+    function infoInsert(id) {
+        var info = document.getElementById('info');
+        info.innerHTML = "Successfully inserted with id: " + id;
+    }
+
+    function infoDelete() {
+        var info = document.getElementById('info');
+        info.innerHTML = "Successfully deleted!";
+    }
+
+    function refresh() {
+        var ams = document.querySelector("azure-mobile-services-bridge");
+        ams.method = "READ";
+        ams.params = null;
+        ams.go();
+    }
+
+    function insert() {
+        var ams = document.querySelector("azure-mobile-services-bridge");
+        var col1 = document.getElementById("col1").value;
+        var col2 = document.getElementById("col2").value;
+        ams.method = "INSERT";
+        ams.params = { col1: col1, col2: col2 };
+        ams.go();
+        document.getElementById("col1").value = "";
+        document.getElementById("col2").value = "";
+    }
+
+    function update(id) {
+
+    }
+
+    function del(id) {
+        var ams = document.querySelector("azure-mobile-services-bridge");
+        ams.method = "DELETE";
+        ams.params = { id: id };
+        ams.go();
+    }
+    </script>
+
+</body>
+</html>
