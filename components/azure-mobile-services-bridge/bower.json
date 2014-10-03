@@ -1,0 +1,22 @@
+{
+  "name": "azure-mobile-services-bridge",
+  "version": "0.0.1",
+  "authors": [
+    "Alex Vilmur <alex@vilmurnet.com>"
+  ],
+  "description": "Element providing an interface to Azure Modile Services.",
+  "keywords": "azure, azure mobile services, polymer, web-components",
+  "main": "azure-mobile-services-bridge.html",
+  "license": "MIT",
+  "homepage": "https://github.com/vipervf1/azure-mobile-services-bridge",
+  "ignore": [
+    "**/.*",
+    "test",
+    "tests",
+    ".bowerrc"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#>=0.4.0 <1.0.0",
+    "polymer-test-tools": "Polymer/polymer-test-tools#>=0.4.0 <1.0.0"
+  }
+}

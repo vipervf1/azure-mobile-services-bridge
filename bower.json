@@ -1,0 +1,7 @@
+{
+  "name": "azure-mobile-services-bridge#gh-pages",
+  "private": true,
+  "dependencies": {
+    "azure-mobile-services-bridge": "vipervf1/azure-mobile-services-bridge#master"
+  }
+}

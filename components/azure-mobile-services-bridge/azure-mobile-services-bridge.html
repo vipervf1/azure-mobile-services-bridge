@@ -1,0 +1,201 @@
+<!--
+    @license
+    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<script src='http://ajax.aspnetcdn.com/ajax/mobileservices/MobileServices.Web-1.1.2.min.js'></script>
+<!--
+Element providing an interface to Azure Modile Services.
+
+##### Example
+
+    <azure-mobile-services-bridge appurl="https://api.azure-mobile.net/"
+                           appkey="DNBjEutqGOCjnLfAdWhwWmAMBDxEbd50"
+                           table="TestTable"
+                           auto></azure-mobile-services-bridge>
+
+With `auto` set to `true`, the element performs a request on creation.
+
+Note: The `params` attribute must be a javascript object.
+
+You can trigger a request explicitly by calling `go` on the
+element.
+
+@element azure-mobile-services-bridge
+@blurb Element providing an interface to Azure Modile Services
+@status alpha
+@homepage http://github.com/vipervf1/azure-mobile-services-bridge
+-->
+<polymer-element name="azure-mobile-services-bridge" hidden attributes="appurl appkey table auto method params">
+    <script>
+
+        Polymer('azure-mobile-services-bridge', {
+            /**
+             * Fired when a response is received.
+             * 
+             * @event core-response
+             */
+
+            /**
+             * Fired when an error is received.
+             * 
+             * @event core-error
+             */
+
+            /**
+             * The `appurl` attribute sets the url of the mobile service
+             *
+             * @attribute appurl
+             * @type string
+             * @default ''
+             */
+            appurl: '',
+
+            /**
+             * The `appkey` attribute sets the applicatio key of the mobile service
+             *
+             * @attribute appkey
+             * @type strng
+             * @default ''
+             */
+            appkey: '',
+
+            /**
+             * The `table` attribute sets the table to access of the mobile service
+             *
+             * @attribute appkey
+             * @type strng
+             * @default ''
+             */
+            table: '',
+
+            /**
+            * Returns the response object.
+            *
+            * @attribute response
+            * @type Object
+            * @default null
+            */
+            response: null,
+
+            /**
+             * If true, automatically performs a request.
+             *
+             * @attribute auto
+             * @type boolean
+             * @default false
+             */
+            auto: false,
+
+            /**
+             * The method to use such as 'READ', 'INSERT', 'UPDATE', or 'DELETE'.
+             * Default is 'READ'.
+             *
+             * @attribute method
+             * @type string
+             * @default ''
+             */
+            method: '',
+
+            /**
+             * Parameters to send to the specified method
+             *  
+             * @attribute params
+             * @type object
+             * @default null
+             */
+            params: null,
+
+            ready: function () {
+                // Ready is a lifecycle callback.
+                // You can do setup work in here.
+                // More info: http://www.polymer-project.org/docs/polymer/polymer.html#lifecyclemethods
+                var MobileServiceClient = WindowsAzure.MobileServiceClient
+                this.client = new MobileServiceClient(this.appurl, this.appkey);
+                this.clientTable = this.client.getTable(this.table);
+                if (this.auto) {
+                    this.go();
+                }
+            },
+
+            /**
+             * Performs an  request to the specified azure mobile service.
+             *
+             * @method go
+             */
+            go: function () {
+                switch (this.method) {
+                    case 'INSERT':
+                        this.goInsert();
+                        break;
+                    case 'UPDATE':
+                        this.goUpdate();
+                        break;
+                    case 'DELETE':
+                        this.goDelete();
+                        break;
+                    case 'READ':
+                    default:
+                        this.goRead();
+                }
+            },
+
+            goRead: function () {
+                var that = this;
+                this.clientTable.read().done(function (results) {
+                    that.proccessResponse(results, that);
+                }, function (err) {
+                    that.proccessError(err, that);
+                });
+            },
+
+            goInsert: function () {
+                var that = this;
+                this.clientTable.insert(this.params).done(function (results) {
+                    console.debug(results);
+                    that.proccessResponse(results, that);
+                }, function (err) {
+                    that.proccessError(err, that);
+                });
+            },
+
+            goUpdate: function () {
+                var that = this;
+                this.clientTable.update(this.params).done(function (results) {
+                    console.debug(results);
+                    that.proccessResponse(results, that);
+                }, function (err) {
+                    that.proccessError(err, that);
+                });
+            },
+
+            goDelete: function () {
+                var that = this;
+                this.clientTable.del(this.params).done(function (results) {
+                    console.debug(results);
+                    that.proccessResponse(results, that);
+                }, function (err) {
+                    that.proccessError(err, that);
+                });
+            },
+
+
+            proccessResponse: function (response, that) {
+                that.response = response;
+                that.fire('core-response', { response: that.response });
+            },
+
+            proccessError: function (error, that) {
+                console.error(error);
+                that.fire('core-error', { error: error });
+            }
+
+        });
+
+    </script>
+</polymer-element>
