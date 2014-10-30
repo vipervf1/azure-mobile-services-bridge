@@ -5,7 +5,7 @@
     "Alex Vilmur <alex@vilmurnet.com>"
   ],
   "description": "Element providing an interface to Azure Modile Services.",
-  "keywords": "azure, azure mobile services, polymer, web-components",
+  "keywords": ["azure", "azure mobile services", "polymer", "web-components"],
   "main": "azure-mobile-services-bridge.html",
   "license": "MIT",
   "homepage": "https://github.com/vipervf1/azure-mobile-services-bridge",
